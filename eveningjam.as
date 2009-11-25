@@ -7,22 +7,39 @@ package {
   public class eveningjam extends Sprite {
     public var map:Map = new Map(10, 7);
     
+    static public var size:int = 33;
+    static public var spacing:int = size+1;
+    
     public function eveningjam() {
+      addChild(new Debug(this));
+      
+      stage.addEventListener(MouseEvent.CLICK, onMouseClick);
       draw();
     }
 
+    // Temporary, for making sure we can map mouse positions to tiles
+    private var _currentX:int = 1;
+    private var _currentY:int = 2;
+    public function onMouseClick(event:MouseEvent):void {
+      // Map mouse position to tile position
+      var x:int = (event.localX - 1) / spacing;
+      var y:int = (event.localY - 1) / spacing;
+      _currentX = x;
+      _currentY = y;
+      draw();
+    }
+    
     public function draw():void {
-      var size:int = 33;
-      var spacing:int = size+1;
-      
       var x:int;
       var y:int;
+
+      graphics.clear();
       
       // Draw the tiles
       for (x = 0; x <= map.width+1; x++) {
         for (y = 0; y <= map.height+1; y++) {
           var type:String = map.tiles[x][y].type;
-          graphics.beginFill(type == Map.GUTTER? 0x333333 : type == Map.ROAD? 0x999999 : 0x2e3561);
+          graphics.beginFill((x == _currentX && y == _currentY) ? 0xffff00 : type == Map.GUTTER? 0x333333 : type == Map.ROAD? 0x999999 : 0x2e3561);
           graphics.drawRect(x * spacing + 1, y * spacing + 1, size, size);
           graphics.endFill();
         }
